@@ -5,6 +5,6 @@ import (
 )
 
 var (
-	unexpectedServerError        = errors.New("unexpected server error")
-	invalidExpressionClientError = errors.New("invaliv expression client error")
+	errFooUnexpectedServerError        = errors.New("unexpected server error")
+	errFooInvalidExpressionClientError = errors.New("invaliv expression client error")
 )

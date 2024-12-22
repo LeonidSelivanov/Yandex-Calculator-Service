@@ -2,6 +2,7 @@ package application
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -37,12 +38,17 @@ func New() *Application {
 func (app *Application) CalcHandler(w http.ResponseWriter, r *http.Request) {
 	var req Request
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	result, err := calculation.Calc(req.Expession)
 	if err != nil {
-		return
+		if errors.As(err, calculation.errFooUnexpectedServerError) {
+			w.WriteHeader(http.StatusInternalServerError)
+		} else if errors.As(err, calculation.errFooInvalidExpressionClientError) {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+		}
 	}
 
 	fmt.Fprintf(w, "result: %f", result)
